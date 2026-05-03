@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kích hoạt bảo hành — Minh Khoa</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700;800&display=swap');
+
+    :root {
+      --brand-color: #0055FF;
+      --brand-light: #EFF4FF;
+      --brand-name: "Minh Khoa";
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Be Vietnam Pro', sans-serif;
+      background: #F0F4FF;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 8px 40px rgba(0,85,255,0.10);
+      padding: 40px 36px;
+      max-width: 480px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .logo-box {
+      width: 80px;
+      height: 80px;
+      background: var(--brand-light);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      font-size: 36px;
+    }
+
+    .brand-name {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--brand-color);
+      margin-bottom: 6px;
+    }
+
+    .brand-slogan {
+      font-size: 13px;
+      color: #94A3B8;
+      margin-bottom: 32px;
+    }
+
+    .divider {
+      height: 1px;
+      background: #F1F5F9;
+      margin: 0 -36px 28px;
+    }
+
+    h2 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1E293B;
+      margin-bottom: 8px;
+    }
+
+    p {
+      font-size: 13px;
+      color: #64748B;
+      line-height: 1.7;
+      margin-bottom: 28px;
+    }
+
+    .form-group {
+      text-align: left;
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: #374151;
+      margin-bottom: 6px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 2px solid #E2E8F0;
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      transition: border 0.15s;
+      color: #1E293B;
+    }
+
+    input:focus {
+      border-color: var(--brand-color);
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      background: var(--brand-color);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: opacity 0.15s;
+    }
+
+    button:hover { opacity: 0.88; }
+
+    .badge {
+      display: inline-block;
+      margin-top: 24px;
+      background: #ECFDF5;
+      color: #065F46;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 14px;
+      border-radius: 20px;
+    }
+
+    .footer {
+      margin-top: 32px;
+      font-size: 11px;
+      color: #CBD5E1;
+    }
+
+    .footer span { color: var(--brand-color); font-weight: 700; }
+
+    /* Đây là nơi branding sẽ được inject động sau này */
+    /* Hiện tại dùng giá trị mặc định ở :root bên trên */
+  </style>
+</head>
+<body>
+
+  <div class="card">
+
+    <!-- Logo placeholder — sau này sẽ load từ CDN -->
+    <div class="logo-box">🛡️</div>
+
+    <!-- Tên thương hiệu — sau này đọc từ config.enc -->
+    <div class="brand-name">Bảo Hành Minh Khoa</div>
+    <div class="brand-slogan">Bảo hành tận tâm · Uy tín hàng đầu</div>
+
+    <div class="divider"></div>
+
+    <h2>Kích hoạt phiếu bảo hành</h2>
+    <p>Nhập thông tin bên dưới để kích hoạt bảo hành cho sản phẩm của bạn. Phiếu bảo hành có hiệu lực ngay sau khi xác nhận.</p>
+
+    <div class="form-group">
+      <label>Mã phiếu bảo hành</label>
+      <input type="text" placeholder="Ví dụ: BH-2025-001234" />
+    </div>
+
+    <div class="form-group">
+      <label>Họ và tên khách hàng</label>
+      <input type="text" placeholder="Nguyễn Văn A" />
+    </div>
+
+    <div class="form-group">
+      <label>Số điện thoại</label>
+      <input type="tel" placeholder="0901 234 567" />
+    </div>
+
+    <button>Kích hoạt bảo hành</button>
+
+    <div class="badge">✅ Trang bảo mật · Dữ liệu được mã hóa</div>
+  </div>
+
+  <div class="footer">
+    Powered by <span>Warranty Platform</span> · minhkhoa.warranty-app.com
+  </div>
+
+</body>
+</html>

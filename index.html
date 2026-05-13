@@ -192,54 +192,39 @@
 
 </body>
   <script>
-  (function() {
-    // 1. Lấy subdomain từ URL
+  async function loadBranding() {
     const hostname = window.location.hostname;
     const parts = hostname.split('.');
+    // Nếu không có subdomain (ví dụ branding.id.vn) thì dùng 'default'
+    const subdomain = (parts.length > 2) ? parts[0] : 'default';
     
-    // Nếu là localhost hoặc domain chính thì để mặc định, còn không thì lấy subdomain
-    let subdomain = (parts.length > 2) ? parts[0] : 'default';
+    // ĐỊA CHỈ GITHUB CỦA BẠN (Thay đúng Username và Repo nhé ní)
+    const githubBase = "https://raw.githubusercontent.com/ThanhHoan0312/Branding/main/tenants";
+    const configUrl = `${githubBase}/${subdomain}/config.json`;
+    const fallbackUrl = `${githubBase}/default/config.json`;
 
-    // 2. Mapping dữ liệu (Tạm thời dùng Object, sau này sẽ fetch từ CDN/R2)
-    const brandConfig = {
-      'hoan': {
-        name: 'Hoàn Mobile',
-        color: '#FF5500',
-        light: '#FFF5F0',
-        slogan: 'Công nghệ trong tầm tay'
-      },
-      'tai': {
-        name: 'Tài Store',
-        color: '#00AA55',
-        light: '#F0FFF5',
-        slogan: 'Chất lượng tạo niềm tin'
-      },
-      'default': {
-        name: 'Qranty Platform',
-        color: '#0055FF',
-        light: '#EFF4FF',
-        slogan: 'Nền tảng bảo hành thông minh'
+    try {
+      let response = await fetch(configUrl);
+      
+      // Nếu khách gõ bừa subdomain không tồn tại (404), lấy config mặc định
+      if (!response.ok) {
+        response = await fetch(fallbackUrl);
       }
-    };
 
-    const config = brandConfig[subdomain] || brandConfig['default'];
+      const config = await response.json();
 
-    // 3. Inject dữ liệu vào giao diện
-    // Cập nhật CSS Variables
-    document.documentElement.style.setProperty('--brand-color', config.color);
-    document.documentElement.style.setProperty('--brand-light', config.light);
+      // Cập nhật giao diện theo đúng tinh thần Stateless Branding
+      document.documentElement.style.setProperty('--brand-color', config.color);
+      document.documentElement.style.setProperty('--brand-light', config.light);
+      document.querySelector('.brand-name').innerText = `Bảo Hành ${config.name}`;
+      document.querySelector('.brand-slogan').innerText = config.slogan;
+      document.title = `Kích hoạt bảo hành — ${config.name}`;
 
-    // Cập nhật text trên trang
-    document.title = `Kích hoạt bảo hành — ${config.name}`;
-    document.querySelector('.brand-name').innerText = `Bảo Hành ${config.name}`;
-    document.querySelector('.brand-slogan').innerText = config.slogan;
-    
-    // Cập nhật footer động
-    const footerSpan = document.querySelector('.footer span');
-    if (footerSpan) footerSpan.innerText = config.name;
-    
-    const footerUrl = document.querySelector('.footer').lastChild;
-    if (footerUrl) footerUrl.textContent = ` · ${hostname}`;
-  })();
+    } catch (error) {
+      console.error("Lỗi 'mượn đường' GitHub:", error);
+    }
+  }
+
+  loadBranding();
 </script>
 </html>

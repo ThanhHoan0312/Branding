@@ -3,21 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Kích hoạt bảo hành — Minh Khoa</title>
+  <title>Hệ thống kích hoạt bảo hành điện tử</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700;800&display=swap');
 
     :root {
-      --brand-color: #0055FF;
-      --brand-light: #EFF4FF;
-      --brand-name: "Minh Khoa";
+      /* Màu sắc mặc định khi đang tải hoặc lỗi */
+      --brand-color: #64748B;
+      --brand-light: #F1F5F9;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: 'Be Vietnam Pro', sans-serif;
-      background: #F0F4FF;
+      background: #F8FAFC;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
@@ -29,11 +29,18 @@
     .card {
       background: #fff;
       border-radius: 20px;
-      box-shadow: 0 8px 40px rgba(0,85,255,0.10);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
       padding: 40px 36px;
       max-width: 480px;
       width: 100%;
       text-align: center;
+      display: block;
+    }
+
+    /* Màn hình lỗi bảo mật khi Tenant không tồn tại */
+    .error-card {
+      display: none;
+      border-top: 5px solid #EF4444;
     }
 
     .logo-box {
@@ -46,6 +53,7 @@
       justify-content: center;
       margin: 0 auto 20px;
       font-size: 36px;
+      transition: all 0.3s ease;
     }
 
     .brand-name {
@@ -53,6 +61,7 @@
       font-weight: 800;
       color: var(--brand-color);
       margin-bottom: 6px;
+      transition: color 0.3s ease;
     }
 
     .brand-slogan {
@@ -100,10 +109,8 @@
       border: 2px solid #E2E8F0;
       border-radius: 10px;
       font-size: 14px;
-      font-family: inherit;
       outline: none;
-      transition: border 0.15s;
-      color: #1E293B;
+      transition: border-color 0.15s;
     }
 
     input:focus {
@@ -119,13 +126,12 @@
       border-radius: 12px;
       font-size: 15px;
       font-weight: 700;
-      font-family: inherit;
       cursor: pointer;
       margin-top: 8px;
-      transition: opacity 0.15s;
+      transition: background-color 0.3s, opacity 0.15s;
     }
 
-    button:hover { opacity: 0.88; }
+    button:hover { opacity: 0.9; }
 
     .badge {
       display: inline-block;
@@ -145,86 +151,102 @@
     }
 
     .footer span { color: var(--brand-color); font-weight: 700; }
-
-    /* Đây là nơi branding sẽ được inject động sau này */
-    /* Hiện tại dùng giá trị mặc định ở :root bên trên */
   </style>
 </head>
 <body>
 
-  <div class="card">
-
-    <!-- Logo placeholder — sau này sẽ load từ CDN -->
-    <div class="logo-box">🛡️</div>
-
-    <!-- Tên thương hiệu — sau này đọc từ config.enc -->
-    <div class="brand-name">Bảo Hành Minh Khoa</div>
-    <div class="brand-slogan">Bảo hành tận tâm · Uy tín hàng đầu</div>
+  <div class="card" id="main-card">
+    <div class="logo-box" id="brand-logo">⏳</div>
+    <div class="brand-name" id="brand-title">Đang xác thực hệ thống...</div>
+    <div class="brand-slogan" id="brand-slogan">Vui lòng đợi trong giây lát</div>
 
     <div class="divider"></div>
 
     <h2>Kích hoạt phiếu bảo hành</h2>
-    <p>Nhập thông tin bên dưới để kích hoạt bảo hành cho sản phẩm của bạn. Phiếu bảo hành có hiệu lực ngay sau khi xác nhận.</p>
+    <p>Nhập thông tin bên dưới để kích hoạt bảo hành cho sản phẩm của bạn.</p>
 
     <div class="form-group">
       <label>Mã phiếu bảo hành</label>
-      <input type="text" placeholder="Ví dụ: BH-2025-001234" />
+      <input type="text" placeholder="Ví dụ: BH-2026-001234" />
     </div>
 
     <div class="form-group">
-      <label>Họ và tên khách hàng</label>
-      <input type="text" placeholder="Nguyễn Văn A" />
-    </div>
-
-    <div class="form-group">
-      <label>Số điện thoại</label>
+      <label>Số điện thoại khách hàng</label>
       <input type="tel" placeholder="0901 234 567" />
     </div>
 
-    <button>Kích hoạt bảo hành</button>
+    <button>Kích hoạt ngay</button>
+    <div class="badge">✅ Kết nối an toàn bảo mật</div>
+  </div>
 
-    <div class="badge">✅ Trang bảo mật · Dữ liệu được mã hóa</div>
+  <div class="card error-card" id="error-card">
+    <div style="font-size: 48px; margin-bottom: 16px;">🚫</div>
+    <h2 style="color: #EF4444; margin-bottom: 12px;">Hệ thống không tồn tại</h2>
+    <p>Địa chỉ liên kết bảo hành này chưa được đăng ký hoặc đã bị khóa thuộc nền tảng Qranty. Vui lòng kiểm tra lại đường dẫn.</p>
+    <button onclick="window.location.href='https://google.com'" style="background: #EF4444;">Thoát trang</button>
   </div>
 
   <div class="footer">
-    Powered by <span>Warranty Platform</span> · minhkhoa.warranty-app.com
+    Powered by <span id="footer-app-name">Qranty</span> · <span id="footer-domain">loading...</span>
   </div>
 
-</body>
   <script>
-  async function loadBranding() {
-    const hostname = window.location.hostname;
-    const parts = hostname.split('.');
-    // Nếu không có subdomain (ví dụ branding.id.vn) thì dùng 'default'
-    const subdomain = (parts.length > 2) ? parts[0] : 'default';
-    
-    // ĐỊA CHỈ GITHUB CỦA BẠN (Thay đúng Username và Repo nhé ní)
-    const githubBase = "https://raw.githubusercontent.com/ThanhHoan0312/Branding/main/tenants";
-    const configUrl = `${githubBase}/${subdomain}/config.json`;
-    const fallbackUrl = `${githubBase}/default/config.json`;
+    async function initStatelessBranding() {
+      const hostname = window.location.hostname;
+      document.getElementById('footer-domain').innerText = hostname;
 
-    try {
-      let response = await fetch(configUrl);
-      
-      // Nếu khách gõ bừa subdomain không tồn tại (404), lấy config mặc định
-      if (!response.ok) {
-        response = await fetch(fallbackUrl);
+      // Đường dẫn kho chứa CDN giả lập trên GitHub
+      const cdnBase = "https://raw.githubusercontent.com/ThanhHoan0312/Branding/master/tenants";
+
+      // Phòng hờ nếu dev chạy ở localhost hoặc truy cập thẳng domain gốc không qua tenant
+      if (hostname === "branding.id.vn" || hostname === "localhost" || hostname === "127.0.0.1") {
+        document.getElementById('brand-logo').innerText = "🛡️";
+        document.getElementById('brand-title').innerText = "Qranty Platform";
+        document.getElementById('brand-slogan').innerText = "Nền tảng quản lý bảo hành tối ưu";
+        document.documentElement.style.setProperty('--brand-color', '#2563EB');
+        document.documentElement.style.setProperty('--brand-light', '#EFF6FF');
+        return;
       }
 
-      const config = await response.json();
+      try {
+        // BƯỚC 1: Tìm kiếm kiểm tra tên miền trong danh mục Registry
+        const domainRegistryUrl = `${cdnBase}/domains/${hostname}.json`;
+        const domainResponse = await fetch(domainRegistryUrl);
 
-      // Cập nhật giao diện theo đúng tinh thần Stateless Branding
-      document.documentElement.style.setProperty('--brand-color', config.color);
-      document.documentElement.style.setProperty('--brand-light', config.light);
-      document.querySelector('.brand-name').innerText = `Bảo Hành ${config.name}`;
-      document.querySelector('.brand-slogan').innerText = config.slogan;
-      document.title = `Kích hoạt bảo hành — ${config.name}`;
+        // HACKER HOẶC NGƯỜI DÙNG GÕ BỪA SUBDOMAIN -> Chặn tại đây
+        if (!domainResponse.ok) {
+          throw new Error("TenantNotFound");
+        }
 
-    } catch (error) {
-      console.error("Lỗi 'mượn đường' GitHub:", error);
+        const domainData = await domainResponse.json();
+        const tenantHash = domainData.hash; // Bóc tách chuỗi mã băm bảo mật (ví dụ: hash_tenant_hoan_7791)
+
+        // BƯỚC 2: Cầm mã băm đi gọi cấu hình giao diện (Branding Config)
+        const brandConfigUrl = `${cdnBase}/brands/${tenantHash}/config.json`;
+        const brandResponse = await fetch(brandConfigUrl);
+        const config = await brandResponse.json();
+
+        // BƯỚC 3: "Đắp" cấu hình tìm được lên giao diện tĩnh
+        document.documentElement.style.setProperty('--brand-color', config.color);
+        document.documentElement.style.setProperty('--brand-light', config.light);
+        
+        document.getElementById('brand-logo').innerText = config.logo_emoji || "🛡️";
+        document.getElementById('brand-title').innerText = `Bảo Hành ${config.name}`;
+        document.getElementById('brand-slogan').innerText = config.slogan;
+        document.getElementById('footer-app-name').innerText = config.name;
+        document.title = `Kích hoạt bảo hành — ${config.name}`;
+
+      } catch (error) {
+        console.error("Luồng xử lý lỗi hệ thống:", error.message);
+        // Hiển thị màn hình khóa, ẩn màn hình chính
+        document.getElementById('main-card').style.display = 'none';
+        document.getElementById('error-card').style.display = 'block';
+        document.title = "Lỗi: Không tìm thấy hệ thống";
+      }
     }
-  }
 
-  loadBranding();
-</script>
+    // Thực thi ngay khi tải trang
+    initStatelessBranding();
+  </script>
+</body>
 </html>

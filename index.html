@@ -2,279 +2,1316 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Hệ thống kích hoạt bảo hành điện tử</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NOIR — Cafe & Tea</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Bebas+Neue&display=swap" rel="stylesheet" />
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700;800&display=swap');
-
     :root {
-      /* Màu sắc mặc định khi đang tải hoặc lỗi */
-      --brand-color: #64748B;
-      --brand-light: #F1F5F9;
+      --black: #0a0a0a;
+      --white: #f5f2ee;
+      --off-white: #ede9e3;
+      --gold: #c9a84c;
+      --gold-light: #e8d5a3;
+      --gold-pale: #f5edcf;
+      --gray: #3a3a3a;
+      --gray-mid: #888;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
 
     body {
-      font-family: 'Be Vietnam Pro', sans-serif;
-      background: #F8FAFC;
-      min-height: 100vh;
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Cormorant Garamond', serif;
+      cursor: none;
+      overflow-x: hidden;
+    }
+
+    /* ── CUSTOM CURSOR ── */
+    .cursor {
+      position: fixed;
+      width: 12px; height: 12px;
+      background: var(--gold);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.08s ease, width 0.2s, height 0.2s, background 0.2s;
+      mix-blend-mode: difference;
+    }
+    .cursor-ring {
+      position: fixed;
+      width: 36px; height: 36px;
+      border: 1px solid var(--gold);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: transform 0.25s ease, width 0.2s, height 0.2s, opacity 0.2s;
+      opacity: 0.6;
+    }
+    body:hover .cursor { opacity: 1; }
+
+    /* ── NOISE TEXTURE OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.04;
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    /* ── NAVBAR ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 28px 60px;
+      mix-blend-mode: normal;
+    }
+    nav::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(10,10,10,0.9) 0%, transparent 100%);
+      pointer-events: none;
+    }
+    .nav-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2rem;
+      letter-spacing: 0.3em;
+      color: var(--white);
+      text-decoration: none;
+      position: relative;
+    }
+    .nav-logo span { color: var(--gold); }
+    .nav-links {
+      display: flex;
+      gap: 40px;
+      list-style: none;
+      position: relative;
+    }
+    .nav-links a {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gray-mid);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    .nav-links a:hover { color: var(--gold); }
+    .nav-cta {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--black);
+      background: var(--gold);
+      padding: 10px 24px;
+      text-decoration: none;
+      transition: background 0.3s, transform 0.2s;
+      position: relative;
+    }
+    .nav-cta:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+    /* ── HERO ── */
+    .hero {
+      height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-left {
       display: flex;
       flex-direction: column;
+      justify-content: flex-end;
+      padding: 0 60px 80px;
+      position: relative;
+      z-index: 2;
+    }
+    .hero-eyebrow {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.3em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 24px;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.3s forwards;
+    }
+    .hero-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(5rem, 10vw, 9rem);
+      line-height: 0.88;
+      letter-spacing: 0.03em;
+      color: var(--white);
+      opacity: 0;
+      animation: fadeUp 0.9s 0.5s forwards;
+    }
+    .hero-title .gold-line {
+      color: transparent;
+      -webkit-text-stroke: 1px var(--gold);
+    }
+    .hero-sub {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1.2rem;
+      color: var(--gray-mid);
+      margin-top: 28px;
+      max-width: 320px;
+      line-height: 1.7;
+      opacity: 0;
+      animation: fadeUp 0.9s 0.7s forwards;
+    }
+    .hero-scroll {
+      display: flex;
       align-items: center;
-      justify-content: center;
-      padding: 24px 16px;
+      gap: 16px;
+      margin-top: 56px;
+      opacity: 0;
+      animation: fadeUp 0.9s 0.9s forwards;
+    }
+    .hero-scroll span {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.55rem;
+      letter-spacing: 0.25em;
+      color: var(--gray-mid);
+      text-transform: uppercase;
+    }
+    .scroll-line {
+      width: 60px;
+      height: 1px;
+      background: var(--gold);
+      position: relative;
+      overflow: hidden;
+    }
+    .scroll-line::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: var(--white);
+      animation: slideLine 2s 1.5s infinite;
     }
 
-    .card {
-      background: #fff;
-      border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-      padding: 40px 36px;
-      max-width: 480px;
+    .hero-right {
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-img-wrap {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+    .hero-img-wrap::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to right, var(--black) 0%, transparent 40%),
+                  linear-gradient(to top, var(--black) 0%, transparent 30%);
+    }
+    .hero-bg {
       width: 100%;
-      text-align: center;
-      display: block;
+      height: 100%;
+      object-fit: cover;
+      filter: grayscale(100%) contrast(1.1);
+      opacity: 0;
+      animation: zoomIn 1.2s 0.2s forwards;
     }
-
-    /* Màn hình lỗi bảo mật linh hoạt */
-    .error-card {
-      display: none;
-      border-top: 5px solid #EF4444;
-    }
-
-    .logo-box {
-      width: 80px;
-      height: 80px;
-      background: var(--brand-light);
-      border-radius: 20px;
+    /* SVG placeholder for hero – coffee steam art */
+    .hero-art {
+      position: absolute;
+      inset: 0;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0 auto 20px;
-      font-size: 36px;
-      transition: all 0.3s ease;
+      z-index: 1;
     }
 
-    .brand-name {
-      font-size: 22px;
-      font-weight: 800;
-      color: var(--brand-color);
-      margin-bottom: 6px;
-      transition: color 0.3s ease;
+    .hero-badge {
+      position: absolute;
+      bottom: 80px;
+      right: 60px;
+      z-index: 3;
+      width: 110px; height: 110px;
+      border: 1px solid rgba(201,168,76,0.4);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      animation: fadeIn 1s 1.2s forwards;
+    }
+    .hero-badge svg { animation: rotateSlow 12s linear infinite; }
+    .hero-badge-dot {
+      position: absolute;
+      width: 8px; height: 8px;
+      background: var(--gold);
+      border-radius: 50%;
     }
 
-    .brand-slogan {
-      font-size: 13px;
-      color: #94A3B8;
-      margin-bottom: 32px;
+    /* ── MARQUEE ── */
+    .marquee-wrap {
+      overflow: hidden;
+      background: var(--gold);
+      padding: 14px 0;
     }
-
-    .divider {
-      height: 1px;
-      background: #F1F5F9;
-      margin: 0 -36px 28px;
+    .marquee-track {
+      display: flex;
+      gap: 0;
+      animation: marquee 20s linear infinite;
+      white-space: nowrap;
     }
-
-    h2 {
-      font-size: 18px;
-      font-weight: 700;
-      color: #1E293B;
-      margin-bottom: 8px;
+    .marquee-track span {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.1rem;
+      letter-spacing: 0.2em;
+      color: var(--black);
+      padding: 0 40px;
     }
+    .marquee-track .dot { color: var(--black); opacity: 0.4; }
 
-    p {
-      font-size: 13px;
-      color: #64748B;
-      line-height: 1.7;
-      margin-bottom: 28px;
+    /* ── SECTION BASE ── */
+    section { position: relative; }
+
+    /* ── ABOUT ── */
+    .about {
+      background: var(--off-white);
+      color: var(--black);
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      min-height: 90vh;
     }
-
-    .form-group {
-      text-align: left;
-      margin-bottom: 16px;
+    .about-left {
+      padding: 100px 60px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      border-right: 1px solid rgba(0,0,0,0.1);
     }
-
-    label {
+    .section-tag {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-tag::before {
+      content: '';
       display: block;
-      font-size: 12px;
-      font-weight: 700;
-      color: #374151;
+      width: 30px;
+      height: 1px;
+      background: var(--gold);
+    }
+    .about-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.5rem, 4vw, 4.5rem);
+      font-weight: 300;
+      line-height: 1.1;
+      color: var(--black);
+      margin-bottom: 36px;
+    }
+    .about-title em {
+      font-style: italic;
+      color: var(--gold);
+    }
+    .about-body {
+      font-size: 1.1rem;
+      line-height: 1.9;
+      color: #555;
+      max-width: 400px;
+    }
+    .about-stats {
+      display: flex;
+      gap: 40px;
+      margin-top: 56px;
+      padding-top: 40px;
+      border-top: 1px solid rgba(0,0,0,0.1);
+    }
+    .stat-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 3rem;
+      color: var(--black);
+      line-height: 1;
+    }
+    .stat-num span { color: var(--gold); }
+    .stat-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.55rem;
+      letter-spacing: 0.2em;
+      color: #888;
+      text-transform: uppercase;
+      margin-top: 6px;
+    }
+
+    .about-right {
+      position: relative;
+      overflow: hidden;
+      background: var(--black);
+    }
+    .about-visual {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .about-grid-art {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* ── PHILOSOPHY ── */
+    .philosophy {
+      background: var(--black);
+      padding: 120px 60px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .philosophy::before {
+      content: 'NOIR';
+      position: absolute;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 30vw;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(201,168,76,0.06);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      letter-spacing: 0.05em;
+    }
+    .phil-quote {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 4vw, 4rem);
+      font-style: italic;
+      font-weight: 300;
+      color: var(--white);
+      max-width: 860px;
+      margin: 0 auto;
+      line-height: 1.4;
+      position: relative;
+      z-index: 1;
+    }
+    .phil-quote .accent { color: var(--gold); }
+    .phil-author {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.3em;
+      color: var(--gray-mid);
+      text-transform: uppercase;
+      margin-top: 32px;
+      position: relative;
+      z-index: 1;
+    }
+    .gold-divider {
+      width: 60px;
+      height: 1px;
+      background: var(--gold);
+      margin: 32px auto;
+    }
+
+    /* ── MENU ── */
+    .menu {
+      background: var(--white);
+      color: var(--black);
+      padding: 100px 60px;
+    }
+    .menu-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 70px;
+    }
+    .menu-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(4rem, 8vw, 7rem);
+      letter-spacing: 0.05em;
+      color: var(--black);
+      line-height: 1;
+    }
+    .menu-title .outline {
+      color: transparent;
+      -webkit-text-stroke: 2px var(--black);
+    }
+    .menu-desc {
+      font-size: 1.05rem;
+      color: #888;
+      max-width: 280px;
+      line-height: 1.7;
+      font-style: italic;
+      text-align: right;
+    }
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+    }
+    .menu-card {
+      background: var(--black);
+      padding: 48px 40px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.4s cubic-bezier(0.25,0.46,0.45,0.94);
+      cursor: none;
+    }
+    .menu-card::before {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 100%; height: 3px;
+      background: var(--gold);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s ease;
+    }
+    .menu-card:hover::before { transform: scaleX(1); }
+    .menu-card:hover { transform: translateY(-4px); }
+    .menu-card-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 5rem;
+      color: rgba(201,168,76,0.08);
+      position: absolute;
+      top: 20px; right: 30px;
+      line-height: 1;
+      transition: color 0.4s;
+    }
+    .menu-card:hover .menu-card-num { color: rgba(201,168,76,0.15); }
+    .menu-card-cat {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.55rem;
+      letter-spacing: 0.25em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .menu-card-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.8rem;
+      font-weight: 400;
+      color: var(--white);
+      margin-bottom: 14px;
+      line-height: 1.2;
+    }
+    .menu-card-desc {
+      font-size: 0.95rem;
+      color: #777;
+      line-height: 1.7;
+    }
+    .menu-card-price {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.4rem;
+      color: var(--gold);
+      margin-top: 28px;
+      letter-spacing: 0.1em;
+    }
+
+    /* ── EXPERIENCE ── */
+    .experience {
+      background: var(--black);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 80vh;
+    }
+    .exp-left {
+      padding: 100px 60px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .exp-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.5rem, 4vw, 4rem);
+      font-weight: 300;
+      color: var(--white);
+      line-height: 1.2;
+      margin-bottom: 40px;
+    }
+    .exp-title em { color: var(--gold); font-style: italic; }
+    .exp-list { list-style: none; }
+    .exp-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+      padding: 24px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .exp-icon {
+      width: 36px; height: 36px;
+      border: 1px solid var(--gold);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .exp-icon svg { width: 16px; height: 16px; fill: var(--gold); }
+    .exp-item-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.1rem;
+      letter-spacing: 0.1em;
+      color: var(--white);
       margin-bottom: 6px;
     }
-
-    input {
-      width: 100%;
-      padding: 12px 14px;
-      border: 2px solid #E2E8F0;
-      border-radius: 10px;
-      font-size: 14px;
-      outline: none;
-      transition: border-color 0.15s;
+    .exp-item-desc {
+      font-size: 0.95rem;
+      color: #666;
+      line-height: 1.7;
+    }
+    .exp-right {
+      position: relative;
+      overflow: hidden;
+      background: #111;
+    }
+    .exp-pattern {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    input:focus {
-      border-color: var(--brand-color);
+    /* ── LOCATION ── */
+    .location {
+      background: var(--off-white);
+      color: var(--black);
+      padding: 100px 60px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+    .loc-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(3rem, 6vw, 5.5rem);
+      letter-spacing: 0.05em;
+      line-height: 0.95;
+      color: var(--black);
+      margin-bottom: 40px;
+    }
+    .loc-title .gold { color: var(--gold); }
+    .loc-info { list-style: none; }
+    .loc-row {
+      display: flex;
+      gap: 20px;
+      padding: 18px 0;
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+    }
+    .loc-row:first-child { border-top: 1px solid rgba(0,0,0,0.08); }
+    .loc-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.55rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      width: 90px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .loc-value {
+      font-size: 1.05rem;
+      color: #444;
+      line-height: 1.6;
+    }
+    .loc-map {
+      background: var(--black);
+      border-radius: 0;
+      overflow: hidden;
+      position: relative;
+      aspect-ratio: 4/3;
+    }
+    .map-frame {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      filter: grayscale(100%) invert(90%) contrast(0.9);
+    }
+    .map-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(10,10,10,0.3) 0%, transparent 100%);
+      pointer-events: none;
+    }
+    .map-pin {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 20px; height: 20px;
+      background: var(--gold);
+      border-radius: 50% 50% 50% 0;
+      transform: translate(-50%, -50%) rotate(-45deg);
+      pointer-events: none;
     }
 
-    button {
-      width: 100%;
-      padding: 14px;
-      background: var(--brand-color);
-      color: #fff;
+    /* ── FOOTER ── */
+    footer {
+      background: var(--black);
+      border-top: 1px solid rgba(201,168,76,0.15);
+      padding: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .footer-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.5rem;
+      letter-spacing: 0.3em;
+      color: var(--white);
+    }
+    .footer-logo span { color: var(--gold); }
+    .footer-tagline {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1rem;
+      color: #555;
+      margin-top: 6px;
+    }
+    .footer-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+    .footer-links a {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #555;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    .footer-links a:hover { color: var(--gold); }
+    .footer-copy {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.55rem;
+      color: #333;
+      letter-spacing: 0.1em;
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    @keyframes zoomIn {
+      from { opacity: 0; transform: scale(1.08); }
+      to   { opacity: 0.55; transform: scale(1); }
+    }
+    @keyframes slideLine {
+      0%   { left: -100%; }
+      100% { left: 100%; }
+    }
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+    @keyframes rotateSlow {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-12px); }
+    }
+    @keyframes steamRise {
+      0%   { opacity: 0; transform: translateY(0) scaleX(1); }
+      30%  { opacity: 0.7; }
+      100% { opacity: 0; transform: translateY(-60px) scaleX(1.5); }
+    }
+    @keyframes pulse-gold {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(201,168,76,0.3); }
+      50%       { box-shadow: 0 0 0 12px rgba(201,168,76,0); }
+    }
+
+    /* ── REVEAL ON SCROLL ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.9s ease, transform 0.9s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-left {
+      opacity: 0;
+      transform: translateX(-40px);
+      transition: opacity 0.9s ease, transform 0.9s ease;
+    }
+    .reveal-left.visible { opacity: 1; transform: translateX(0); }
+    .reveal-right {
+      opacity: 0;
+      transform: translateX(40px);
+      transition: opacity 0.9s ease, transform 0.9s ease;
+    }
+    .reveal-right.visible { opacity: 1; transform: translateX(0); }
+
+    /* ── COFFEE CUP SVG ART ── */
+    .coffee-art { animation: float 5s ease-in-out infinite; }
+    .steam-1 { animation: steamRise 2.5s 0.3s ease-in infinite; }
+    .steam-2 { animation: steamRise 2.5s 0.8s ease-in infinite; }
+    .steam-3 { animation: steamRise 2.5s 1.3s ease-in infinite; }
+
+    /* ── HOVER EFFECTS ── */
+    a, button { cursor: none; }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--black);
+      background: var(--gold);
+      padding: 16px 36px;
+      text-decoration: none;
+      margin-top: 40px;
+      transition: background 0.3s, transform 0.2s;
       border: none;
-      border-radius: 12px;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-      margin-top: 8px;
-      transition: background-color 0.3s, opacity 0.15s;
     }
+    .btn-primary:hover { background: var(--gold-light); transform: translateX(4px); }
+    .btn-primary svg { transition: transform 0.2s; }
+    .btn-primary:hover svg { transform: translateX(4px); }
 
-    button:hover { opacity: 0.9; }
-
-    .badge {
-      display: inline-block;
-      margin-top: 24px;
-      background: #ECFDF5;
-      color: #065F46;
-      font-size: 12px;
-      font-weight: 700;
-      padding: 6px 14px;
-      border-radius: 20px;
+    .btn-outline {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      background: transparent;
+      border: 1px solid var(--gold);
+      padding: 16px 36px;
+      text-decoration: none;
+      margin-top: 40px;
+      transition: background 0.3s, color 0.3s;
     }
-
-    .footer {
-      margin-top: 32px;
-      font-size: 11px;
-      color: #CBD5E1;
-    }
-
-    .footer span { color: var(--brand-color); font-weight: 700; }
+    .btn-outline:hover { background: var(--gold); color: var(--black); }
   </style>
 </head>
 <body>
 
-  <div class="card" id="main-card">
-    <div class="logo-box" id="brand-logo">⏳</div>
-    <div class="brand-name" id="brand-title">Đang xác thực hệ thống...</div>
-    <div class="brand-slogan" id="brand-slogan">Vui lòng đợi trong giây lát</div>
+<!-- Cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
 
-    <div class="divider"></div>
+<!-- ── NAVIGATION ── -->
+<nav>
+  <a href="#" class="nav-logo">NOIR<span>.</span></a>
+  <ul class="nav-links">
+    <li><a href="#about">Về Chúng Tôi</a></li>
+    <li><a href="#menu">Menu</a></li>
+    <li><a href="#experience">Không Gian</a></li>
+    <li><a href="#location">Địa Chỉ</a></li>
+  </ul>
+  <a href="#location" class="nav-cta">Ghé Thăm</a>
+</nav>
 
-    <h2>Kích hoạt phiếu bảo hành</h2>
-    <p>Nhập thông tin bên dưới để kích hoạt bảo hành cho sản phẩm của bạn.</p>
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-left">
+    <p class="hero-eyebrow">// Est. 2024 — Dĩ An, Bình Dương</p>
+    <h1 class="hero-title">
+      THE<br>
+      <span class="gold-line">DARK</span><br>
+      SIDE<br>
+      OF TASTE
+    </h1>
+    <p class="hero-sub">Nơi từng giọt cà phê là một câu chuyện — đậm, sâu, và không thể quên.</p>
+    <div class="hero-scroll">
+      <div class="scroll-line"></div>
+      <span>Scroll để khám phá</span>
+    </div>
+  </div>
 
-    <div class="form-group">
-      <label>Mã phiếu bảo hành</label>
-      <input type="text" placeholder="Ví dụ: BH-2026-001234" />
+  <div class="hero-right">
+    <div class="hero-img-wrap">
+      <!-- Coffee cup SVG art -->
+      <svg class="about-grid-art" viewBox="0 0 600 700" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="coffeeGrad" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#2a1a00" />
+            <stop offset="100%" stop-color="#0a0a0a" />
+          </radialGradient>
+          <radialGradient id="liquidGrad" cx="40%" cy="35%" r="60%">
+            <stop offset="0%" stop-color="#3d2600" />
+            <stop offset="100%" stop-color="#1a0d00" />
+          </radialGradient>
+        </defs>
+        <rect width="600" height="700" fill="#0d0d0d"/>
+        <!-- Background circles -->
+        <circle cx="300" cy="350" r="280" fill="none" stroke="rgba(201,168,76,0.04)" stroke-width="1"/>
+        <circle cx="300" cy="350" r="220" fill="none" stroke="rgba(201,168,76,0.06)" stroke-width="1"/>
+        <circle cx="300" cy="350" r="160" fill="none" stroke="rgba(201,168,76,0.08)" stroke-width="1"/>
+
+        <!-- Coffee cup -->
+        <g transform="translate(300, 380)" class="coffee-art">
+          <!-- Saucer -->
+          <ellipse cx="0" cy="95" rx="110" ry="18" fill="#1a1a1a" stroke="#c9a84c" stroke-width="0.8"/>
+          <ellipse cx="0" cy="90" rx="90" ry="12" fill="#111"/>
+
+          <!-- Cup body -->
+          <path d="M-70,0 Q-75,80 -60,88 L60,88 Q75,80 70,0 Z" fill="url(#coffeeGrad)" stroke="#222" stroke-width="1"/>
+          <!-- Cup rim -->
+          <ellipse cx="0" cy="0" rx="70" ry="12" fill="#1e1e1e" stroke="#333" stroke-width="1"/>
+          <!-- Coffee surface -->
+          <ellipse cx="0" cy="2" rx="62" ry="10" fill="url(#liquidGrad)"/>
+          <!-- Latte art swirl -->
+          <ellipse cx="0" cy="2" rx="28" ry="6" fill="none" stroke="rgba(201,168,76,0.5)" stroke-width="1.5"/>
+          <path d="M-14,2 Q0,-8 14,2 Q0,12 -14,2 Z" fill="rgba(201,168,76,0.15)"/>
+          <!-- Handle -->
+          <path d="M68,20 Q100,30 100,55 Q100,75 68,72" fill="none" stroke="#2a2a2a" stroke-width="10" stroke-linecap="round"/>
+          <path d="M68,20 Q95,30 95,55 Q95,72 68,72" fill="none" stroke="#c9a84c" stroke-width="0.8" opacity="0.5"/>
+
+          <!-- Steam -->
+          <g class="steam-1">
+            <path d="M-20,-10 Q-28,-30 -20,-50 Q-12,-70 -20,-90" fill="none" stroke="rgba(201,168,76,0.4)" stroke-width="2.5" stroke-linecap="round"/>
+          </g>
+          <g class="steam-2">
+            <path d="M0,-10 Q8,-35 0,-55 Q-8,-75 0,-95" fill="none" stroke="rgba(201,168,76,0.5)" stroke-width="2.5" stroke-linecap="round"/>
+          </g>
+          <g class="steam-3">
+            <path d="M20,-10 Q28,-30 20,-50 Q12,-70 20,-90" fill="none" stroke="rgba(201,168,76,0.4)" stroke-width="2.5" stroke-linecap="round"/>
+          </g>
+        </g>
+
+        <!-- Decorative text -->
+        <text x="300" y="640" font-family="'Bebas Neue', sans-serif" font-size="11" fill="rgba(201,168,76,0.25)" text-anchor="middle" letter-spacing="8">NOIR — CAFE & TEA</text>
+
+        <!-- Corner decorations -->
+        <g opacity="0.15">
+          <line x1="30" y1="30" x2="80" y2="30" stroke="#c9a84c" stroke-width="0.5"/>
+          <line x1="30" y1="30" x2="30" y2="80" stroke="#c9a84c" stroke-width="0.5"/>
+          <line x1="570" y1="30" x2="520" y2="30" stroke="#c9a84c" stroke-width="0.5"/>
+          <line x1="570" y1="30" x2="570" y2="80" stroke="#c9a84c" stroke-width="0.5"/>
+          <line x1="30" y1="670" x2="80" y2="670" stroke="#c9a84c" stroke-width="0.5"/>
+          <line x1="30" y1="670" x2="30" y2="620" stroke="#c9a84c" stroke-width="0.5"/>
+          <line x1="570" y1="670" x2="520" y2="670" stroke="#c9a84c" stroke-width="0.5"/>
+          <line x1="570" y1="670" x2="570" y2="620" stroke="#c9a84c" stroke-width="0.5"/>
+        </g>
+      </svg>
     </div>
 
-    <div class="form-group">
-      <label>Số điện thoại khách hàng</label>
-      <input type="tel" placeholder="0901 234 567" />
+    <!-- Rotating badge -->
+    <div class="hero-badge">
+      <svg viewBox="0 0 110 110" width="110" height="110">
+        <defs>
+          <path id="circle-text" d="M55,55 m-42,0 a42,42 0 1,1 84,0 a42,42 0 1,1 -84,0"/>
+        </defs>
+        <text font-family="'Space Mono', monospace" font-size="7.5" fill="#c9a84c" letter-spacing="5.2">
+          <textPath href="#circle-text">NOIR CAFE & TEA • DĨ AN • BÌNH DƯƠNG •</textPath>
+        </text>
+      </svg>
+      <div class="hero-badge-dot"></div>
     </div>
-
-    <button>Kích hoạt ngay</button>
-    <div class="badge">✅ Kết nối an toàn bảo mật</div>
   </div>
+</section>
 
-  <div class="card error-card" id="error-card">
-    <div style="font-size: 48px; margin-bottom: 16px;">🚫</div>
-    <h2 style="color: #EF4444; margin-bottom: 12px;" id="error-title">Hệ thống không tồn tại</h2>
-    <p id="error-message">Địa chỉ liên kết bảo hành này chưa được đăng ký hoặc đã bị khóa thuộc nền tảng Qranty. Vui lòng kiểm tra lại đường dẫn.</p>
-    <button onclick="window.location.reload()" style="background: #EF4444;">Thử lại</button>
+<!-- ── MARQUEE ── -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <span>SPECIALTY COFFEE</span><span class="dot">◆</span>
+    <span>HANDCRAFTED TEA</span><span class="dot">◆</span>
+    <span>NOIR EXPERIENCE</span><span class="dot">◆</span>
+    <span>DĨ AN · BÌNH DƯƠNG</span><span class="dot">◆</span>
+    <span>SPECIALTY COFFEE</span><span class="dot">◆</span>
+    <span>HANDCRAFTED TEA</span><span class="dot">◆</span>
+    <span>NOIR EXPERIENCE</span><span class="dot">◆</span>
+    <span>DĨ AN · BÌNH DƯƠNG</span><span class="dot">◆</span>
+    <span>SPECIALTY COFFEE</span><span class="dot">◆</span>
+    <span>HANDCRAFTED TEA</span><span class="dot">◆</span>
+    <span>NOIR EXPERIENCE</span><span class="dot">◆</span>
+    <span>DĨ AN · BÌNH DƯƠNG</span><span class="dot">◆</span>
   </div>
+</div>
 
-  <div class="footer">
-    Powered by <span id="footer-app-name">Qranty</span> · <span id="footer-domain">loading...</span>
+<!-- ── ABOUT ── -->
+<section class="about" id="about">
+  <div class="about-left">
+    <div class="section-tag reveal">Về Noir</div>
+    <h2 class="about-title reveal">
+      Tối giản.<br>
+      Tinh tế.<br>
+      <em>Không thể quên.</em>
+    </h2>
+    <p class="about-body reveal">
+      Noir không chỉ là một quán cà phê — đây là một trải nghiệm. Từng ly được pha chế thủ công, từng góc được bố trí có chủ đích, mọi thứ đều được chắt lọc để mang lại cảm giác tỉnh táo, sâu lắng và đầy cảm hứng.
+    </p>
+    <p class="about-body reveal" style="margin-top:16px;">
+      Chúng tôi tin rằng cà phê tốt không cần phô trương. Chỉ cần hạt cà phê chất lượng, tay nghề thật sự, và một không gian biết lắng nghe bạn.
+    </p>
+    <div class="about-stats reveal">
+      <div>
+        <div class="stat-num">20<span>+</span></div>
+        <div class="stat-label">Thức uống đặc sắc</div>
+      </div>
+      <div>
+        <div class="stat-num">100<span>%</span></div>
+        <div class="stat-label">Nguyên liệu chọn lọc</div>
+      </div>
+      <div>
+        <div class="stat-num">∞</div>
+        <div class="stat-label">Hậu vị khó quên</div>
+      </div>
+    </div>
   </div>
+  <div class="about-right">
+    <div class="about-visual">
+      <svg class="about-grid-art" viewBox="0 0 600 700" xmlns="http://www.w3.org/2000/svg">
+        <rect width="600" height="700" fill="#0a0a0a"/>
+        <!-- Grid pattern -->
+        <g stroke="rgba(201,168,76,0.06)" stroke-width="0.5">
+          <line x1="0" y1="100" x2="600" y2="100"/>
+          <line x1="0" y1="200" x2="600" y2="200"/>
+          <line x1="0" y1="300" x2="600" y2="300"/>
+          <line x1="0" y1="400" x2="600" y2="400"/>
+          <line x1="0" y1="500" x2="600" y2="500"/>
+          <line x1="0" y1="600" x2="600" y2="600"/>
+          <line x1="100" y1="0" x2="100" y2="700"/>
+          <line x1="200" y1="0" x2="200" y2="700"/>
+          <line x1="300" y1="0" x2="300" y2="700"/>
+          <line x1="400" y1="0" x2="400" y2="700"/>
+          <line x1="500" y1="0" x2="500" y2="700"/>
+        </g>
+        <!-- Large N -->
+        <text x="50" y="550" font-family="'Bebas Neue', sans-serif" font-size="540" fill="none" stroke="rgba(201,168,76,0.07)" stroke-width="1">N</text>
+        <!-- Dots at intersections -->
+        <g fill="rgba(201,168,76,0.2)">
+          <circle cx="100" cy="100" r="2"/>
+          <circle cx="300" cy="100" r="2"/>
+          <circle cx="500" cy="100" r="2"/>
+          <circle cx="200" cy="300" r="2"/>
+          <circle cx="400" cy="300" r="2"/>
+          <circle cx="100" cy="500" r="2"/>
+          <circle cx="300" cy="500" r="2"/>
+          <circle cx="500" cy="500" r="2"/>
+        </g>
+        <!-- Central diamond -->
+        <rect x="250" y="300" width="100" height="100" fill="none" stroke="rgba(201,168,76,0.2)" stroke-width="1" transform="rotate(45 300 350)"/>
+        <rect x="265" y="315" width="70" height="70" fill="rgba(201,168,76,0.05)" stroke="rgba(201,168,76,0.1)" stroke-width="0.5" transform="rotate(45 300 350)"/>
+        <!-- Label -->
+        <text x="300" y="358" font-family="'Bebas Neue',sans-serif" font-size="14" fill="rgba(201,168,76,0.5)" text-anchor="middle" letter-spacing="3">NOIR</text>
+      </svg>
+    </div>
+  </div>
+</section>
 
-  <script>
-    // Hàm phụ trợ hiển thị giao diện báo lỗi động
-    function showErrorCard(title, message) {
-      document.getElementById('main-card').style.display = 'none';
-      document.getElementById('error-card').style.display = 'block';
-      document.getElementById('error-title').innerText = title;
-      document.getElementById('error-message').innerText = message;
-      document.title = `Lỗi: ${title}`;
-    }
+<!-- ── PHILOSOPHY ── -->
+<section class="philosophy">
+  <div class="gold-divider reveal"></div>
+  <blockquote class="phil-quote reveal">
+    "Một tách cà phê tốt không cần nhiều lời. Nó tự kể <span class="accent">câu chuyện của mình</span> — qua mùi hương, qua nhiệt độ, qua từng giọt chạm lưỡi."
+  </blockquote>
+  <p class="phil-author reveal">— Triết lý của Noir</p>
+  <div class="gold-divider reveal"></div>
+</section>
 
-    async function initStatelessBranding() {
-      const hostname = window.location.hostname;
-      document.getElementById('footer-domain').innerText = hostname;
+<!-- ── MENU ── -->
+<section class="menu" id="menu">
+  <div class="menu-header reveal">
+    <div>
+      <div class="section-tag">Thực đơn đặc sắc</div>
+      <h2 class="menu-title">DARK<br><span class="outline">MENU</span></h2>
+    </div>
+    <p class="menu-desc">Mỗi thức uống là một tác phẩm — được pha chế với sự tỉ mỉ và tình yêu.</p>
+  </div>
+  <div class="menu-grid">
+    <div class="menu-card reveal">
+      <div class="menu-card-num">01</div>
+      <div class="menu-card-cat">Signature</div>
+      <div class="menu-card-name">Noir Black<br>Espresso</div>
+      <div class="menu-card-desc">Espresso đậm đặc, chiết xuất hoàn hảo từ hạt Arabica Đà Lạt. Hậu vị chocolate đắng nhẹ.</div>
+      <div class="menu-card-price">35.000đ</div>
+    </div>
+    <div class="menu-card reveal" style="transition-delay:0.1s">
+      <div class="menu-card-num">02</div>
+      <div class="menu-card-cat">Cold Brew</div>
+      <div class="menu-card-name">Midnight<br>Cold Brew</div>
+      <div class="menu-card-desc">Ủ lạnh 18 giờ, vị mượt mà, không đắng gắt. Thêm tonic và cam bergamot.</div>
+      <div class="menu-card-price">55.000đ</div>
+    </div>
+    <div class="menu-card reveal" style="transition-delay:0.2s">
+      <div class="menu-card-num">03</div>
+      <div class="menu-card-cat">Latte Art</div>
+      <div class="menu-card-name">Golden<br>Oat Latte</div>
+      <div class="menu-card-desc">Espresso double shot, sữa yến mạch steamed, latte art thủ công — nhẹ nhàng mà đủ đầy.</div>
+      <div class="menu-card-price">65.000đ</div>
+    </div>
+    <div class="menu-card reveal" style="transition-delay:0.15s">
+      <div class="menu-card-num">04</div>
+      <div class="menu-card-cat">Tea Series</div>
+      <div class="menu-card-name">Noir Earl<br>Grey Cloud</div>
+      <div class="menu-card-desc">Trà Earl Grey thượng hạng, topped với cream cheese mousse nhẹ béo, hương bergamot.</div>
+      <div class="menu-card-price">55.000đ</div>
+    </div>
+    <div class="menu-card reveal" style="transition-delay:0.25s">
+      <div class="menu-card-num">05</div>
+      <div class="menu-card-cat">Matcha</div>
+      <div class="menu-card-name">Dark Matter<br>Matcha</div>
+      <div class="menu-card-desc">Matcha Nhật Bản grade A, kết hợp activated charcoal — xanh sâu, hậu vị ngọt dịu.</div>
+      <div class="menu-card-price">60.000đ</div>
+    </div>
+    <div class="menu-card reveal" style="transition-delay:0.35s">
+      <div class="menu-card-num">06</div>
+      <div class="menu-card-cat">Seasonal</div>
+      <div class="menu-card-name">Honey &amp;<br>Smoke Latte</div>
+      <div class="menu-card-desc">Espresso pha mật ong rừng, sữa tươi steamed, thoang thoảng khói gỗ từ vanilla smoke.</div>
+      <div class="menu-card-price">70.000đ</div>
+    </div>
+  </div>
+  <div style="text-align:center; margin-top:50px;">
+    <a href="#" class="btn-primary reveal">
+      Xem Toàn Bộ Menu
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+</section>
 
-      // Đường dẫn kho chứa CDN giả lập trên GitHub
-      const cdnBase = "https://raw.githubusercontent.com/ThanhHoan0312/Branding/master/tenants";
+<!-- ── EXPERIENCE ── -->
+<section class="experience" id="experience">
+  <div class="exp-left">
+    <div class="section-tag reveal-left">Không Gian</div>
+    <h2 class="exp-title reveal-left">
+      Nơi bạn<br>
+      muốn <em>ở lại</em><br>
+      mãi hơn.
+    </h2>
+    <ul class="exp-list">
+      <li class="exp-item reveal-left">
+        <div class="exp-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+        </div>
+        <div>
+          <div class="exp-item-title">Âm Nhạc Tuyển Chọn</div>
+          <div class="exp-item-desc">Playlist lo-fi jazz được tuyển chọn thủ công, âm lượng vừa đủ để bạn tập trung hay thả hồn.</div>
+        </div>
+      </li>
+      <li class="exp-item reveal-left" style="transition-delay:0.1s">
+        <div class="exp-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>
+        </div>
+        <div>
+          <div class="exp-item-title">Góc Làm Việc & Đọc Sách</div>
+          <div class="exp-item-desc">WiFi tốc độ cao, ổ cắm điện đầy đủ, ánh sáng tự nhiên được tối ưu cho mọi góc ngồi.</div>
+        </div>
+      </li>
+      <li class="exp-item reveal-left" style="transition-delay:0.2s">
+        <div class="exp-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+        </div>
+        <div>
+          <div class="exp-item-title">Không Gian Chụp Ảnh</div>
+          <div class="exp-item-desc">Nội thất tối giản tinh tế — đen, trắng, vàng — mọi góc đều là một bức ảnh đáng nhớ.</div>
+        </div>
+      </li>
+      <li class="exp-item reveal-left" style="transition-delay:0.3s">
+        <div class="exp-icon">
+          <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>
+        </div>
+        <div>
+          <div class="exp-item-title">Giờ Mở Cửa Linh Hoạt</div>
+          <div class="exp-item-desc">Mở cửa từ sáng sớm đến tối muộn — dù bạn cần cà phê buổi sáng hay muốn trốn thoát buổi chiều.</div>
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div class="exp-right">
+    <div class="exp-pattern">
+      <svg viewBox="0 0 600 700" width="600" height="700" xmlns="http://www.w3.org/2000/svg">
+        <rect width="600" height="700" fill="#0d0d0d"/>
+        <!-- Concentric circles -->
+        <g fill="none" stroke="rgba(201,168,76,0.07)" stroke-width="1">
+          <circle cx="300" cy="350" r="50"/>
+          <circle cx="300" cy="350" r="100"/>
+          <circle cx="300" cy="350" r="150"/>
+          <circle cx="300" cy="350" r="200"/>
+          <circle cx="300" cy="350" r="250"/>
+          <circle cx="300" cy="350" r="300"/>
+        </g>
+        <!-- Cross lines -->
+        <g stroke="rgba(201,168,76,0.05)" stroke-width="0.5">
+          <line x1="300" y1="0" x2="300" y2="700"/>
+          <line x1="0" y1="350" x2="600" y2="350"/>
+          <line x1="0" y1="0" x2="600" y2="700"/>
+          <line x1="600" y1="0" x2="0" y2="700"/>
+        </g>
 
-      // Phòng hờ nếu dev chạy ở localhost hoặc truy cập thẳng domain gốc không qua tenant
-      if (hostname === "branding.id.vn" || hostname === "localhost" || hostname === "127.0.0.1") {
-        document.getElementById('brand-logo').innerText = "🛡️";
-        document.getElementById('brand-title').innerText = "Qranty Platform";
-        document.getElementById('brand-slogan').innerText = "Nền tảng quản lý bảo hành tối ưu";
-        document.documentElement.style.setProperty('--brand-color', '#2563EB');
-        document.documentElement.style.setProperty('--brand-light', '#EFF6FF');
-        return;
+        <!-- Big O outline text -->
+        <text x="300" y="420" font-family="'Bebas Neue',sans-serif" font-size="300" fill="none"
+          stroke="rgba(201,168,76,0.05)" stroke-width="1" text-anchor="middle">O</text>
+
+        <!-- Central icon -->
+        <g transform="translate(300,350)">
+          <circle r="42" fill="rgba(201,168,76,0.08)" stroke="rgba(201,168,76,0.3)" stroke-width="1"/>
+          <text x="0" y="8" font-family="'Bebas Neue',sans-serif" font-size="20" fill="rgba(201,168,76,0.8)" text-anchor="middle" letter-spacing="2">NOIR</text>
+        </g>
+
+        <!-- Tick marks on outer circle -->
+        <g stroke="rgba(201,168,76,0.2)" stroke-width="1">
+          <g transform="translate(300,350)">
+            <line x1="0" y1="-298" x2="0" y2="-288" transform="rotate(0)"/>
+            <line x1="0" y1="-298" x2="0" y2="-288" transform="rotate(30)"/>
+            <line x1="0" y1="-298" x2="0" y2="-288" transform="rotate(60)"/>
+            <line x1="0" y1="-298" x2="0" y2="-288" transform="rotate(90)"/>
+            <line x1="0" y1="-298" x2="0" y2="-288" transform="rotate(120)"/>
+            <line x1="0" y1="-298" x2="0" y2="-288" transform="rotate(150)"/>
+            <line x1="0" y1="-298" x2="0" y2="-288" transform="rotate(180)"/>
+            <line x1="0" y1="-298" x2="0" y2="-288" transform="rotate(210)"/>
+            <line x1="0" y1="-298" x2="0" y2="-288" transform="rotate(240)"/>
+            <line x1="0" y1="-298" x2="0" y2="-288" transform="rotate(270)"/>
+            <line x1="0" y1="-298" x2="0" y2="-288" transform="rotate(300)"/>
+            <line x1="0" y1="-298" x2="0" y2="-288" transform="rotate(330)"/>
+          </g>
+        </g>
+
+        <!-- Corner labels -->
+        <text x="30" y="50" font-family="'Space Mono',monospace" font-size="9" fill="rgba(201,168,76,0.25)" letter-spacing="3">CAFE</text>
+        <text x="30" y="680" font-family="'Space Mono',monospace" font-size="9" fill="rgba(201,168,76,0.25)" letter-spacing="3">TEA</text>
+        <text x="490" y="50" font-family="'Space Mono',monospace" font-size="9" fill="rgba(201,168,76,0.25)" text-anchor="end" letter-spacing="3">2024</text>
+        <text x="490" y="680" font-family="'Space Mono',monospace" font-size="9" fill="rgba(201,168,76,0.25)" text-anchor="end" letter-spacing="3">NOIR</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ── LOCATION ── -->
+<section class="location" id="location">
+  <div>
+    <h2 class="loc-title reveal-left">
+      TÌM<br>CHÚNG<br>
+      <span class="gold">TÔI.</span>
+    </h2>
+    <ul class="loc-info">
+      <li class="loc-row reveal-left">
+        <span class="loc-label">Địa Chỉ</span>
+        <span class="loc-value">102 Lý Thường Kiệt, P. Dĩ An,<br>Thị Xã Dĩ An, Bình Dương</span>
+      </li>
+      <li class="loc-row reveal-left" style="transition-delay:0.1s">
+        <span class="loc-label">Giờ Mở</span>
+        <span class="loc-value">Thứ 2 – Chủ Nhật<br>07:00 – 22:30</span>
+      </li>
+      <li class="loc-row reveal-left" style="transition-delay:0.2s">
+        <span class="loc-label">Liên Hệ</span>
+        <span class="loc-value">Instagram: @noircafetea<br>Facebook: Noir Cafe & Tea</span>
+      </li>
+      <li class="loc-row reveal-left" style="transition-delay:0.3s">
+        <span class="loc-label">Parking</span>
+        <span class="loc-value">Miễn phí trước cửa quán</span>
+      </li>
+    </ul>
+    <a href="https://maps.google.com/?q=Noir+Cafe+Tea+Di+An+Binh+Duong" class="btn-outline reveal-left" target="_blank">
+      Chỉ Đường
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+  <div class="loc-map reveal-right">
+    <iframe
+      class="map-frame"
+      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3917.2!2d106.7655307!3d10.9077823!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3174d9002e521f81%3A0x6698d29d5c92bfbf!2sNoir%20Cafe%20%26%20Tea!5e0!3m2!1svi!2svn!4v1700000000000"
+      allowfullscreen=""
+      loading="lazy"
+      referrerpolicy="no-referrer-when-downgrade">
+    </iframe>
+    <div class="map-overlay"></div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div>
+    <div class="footer-logo">NOIR<span>.</span></div>
+    <div class="footer-tagline">Where darkness tastes divine.</div>
+  </div>
+  <ul class="footer-links">
+    <li><a href="#about">Về Chúng Tôi</a></li>
+    <li><a href="#menu">Menu</a></li>
+    <li><a href="#experience">Không Gian</a></li>
+    <li><a href="#location">Liên Hệ</a></li>
+  </ul>
+  <div class="footer-copy">© 2024 Noir Cafe & Tea. All rights reserved.</div>
+</footer>
+
+<script>
+  // ── Custom Cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx + 'px';
+    cursor.style.top  = my + 'px';
+  });
+
+  (function animRing() {
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    ring.style.left = rx + 'px';
+    ring.style.top  = ry + 'px';
+    requestAnimationFrame(animRing);
+  })();
+
+  document.querySelectorAll('a, button, .menu-card').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursor.style.width = '20px';
+      cursor.style.height = '20px';
+      ring.style.width = '56px';
+      ring.style.height = '56px';
+      ring.style.opacity = '1';
+    });
+    el.addEventListener('mouseleave', () => {
+      cursor.style.width = '12px';
+      cursor.style.height = '12px';
+      ring.style.width = '36px';
+      ring.style.height = '36px';
+      ring.style.opacity = '0.6';
+    });
+  });
+
+  // ── Scroll Reveal
+  const revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
       }
+    });
+  }, { threshold: 0.15 });
+  revealEls.forEach(el => obs.observe(el));
 
-      try {
-        // ==========================================
-        // BƯỚC 1: KIỂM TRA TÊN MIỀN (REGISTRY CHECK)
-        // ==========================================
-        const domainRegistryUrl = `${cdnBase}/domains/${hostname}.json`;
-        const domainResponse = await fetch(domainRegistryUrl);
-
-        if (!domainResponse.ok) {
-          // CASE 1: Hoàn toàn không tồn tại file domain (Hacker / Gõ bừa subdomain)
-          showErrorCard(
-            "Hệ thống không tồn tại", 
-            "Địa chỉ liên kết bảo hành này chưa được đăng ký hoặc đã bị khóa thuộc nền tảng Qranty. Vui lòng kiểm tra lại đường dẫn."
-          );
-          return;
-        }
-
-        const domainData = await domainResponse.json();
-        const tenantHash = domainData.hash; 
-
-        // ==========================================
-        // BƯỚC 2: LẤY CẤU HÌNH THƯƠNG HIỆU (BRANDING CONFIG)
-        // ==========================================
-        const brandConfigUrl = `${cdnBase}/brands/${tenantHash}/config.json`;
-        const brandResponse = await fetch(brandConfigUrl);
-
-        if (!brandResponse.ok) {
-          // CASE 2: Tên miền hợp lệ, nhưng Tenant chưa up file config.json lên thư mục tương ứng
-          showErrorCard(
-            "Chưa cấu hình giao diện", 
-            "Tên miền của bạn đã được đăng ký thành công trên Qranty. Vui lòng quay lại hệ thống quản trị để thiết lập màu sắc và logo (cập nhật file branding) để kích hoạt giao diện."
-          );
-          return;
-        }
-
-        // CASE 3: Mọi thứ hoàn hảo
-        const config = await brandResponse.json();
-
-        // "Đắp" cấu hình tìm được lên giao diện tĩnh
-        document.documentElement.style.setProperty('--brand-color', config.color);
-        document.documentElement.style.setProperty('--brand-light', config.light);
-        
-        document.getElementById('brand-logo').innerText = config.logo_emoji || "🛡️";
-        document.getElementById('brand-title').innerText = `Bảo Hành ${config.name}`;
-        document.getElementById('brand-slogan').innerText = config.slogan;
-        document.getElementById('footer-app-name').innerText = config.name;
-        document.title = `Kích hoạt bảo hành — ${config.name}`;
-
-      } catch (error) {
-        console.error("Luồng xử lý lỗi hệ thống:", error.message);
-        showErrorCard(
-          "Lỗi kết nối mạng", 
-          "Không thể tải cấu hình tài nguyên bảo hành lúc này. Vui lòng kiểm tra lại kết nối mạng của bạn."
-        );
-      }
-    }
-
-    // Thực thi ngay khi tải trang
-    initStatelessBranding();
-  </script>
+  // ── Smooth scroll for nav links
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
+    });
+  });
+</script>
 </body>
 </html>

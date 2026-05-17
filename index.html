@@ -37,7 +37,7 @@
       display: block;
     }
 
-    /* Màn hình lỗi bảo mật khi Tenant không tồn tại */
+    /* Màn hình lỗi bảo mật linh hoạt */
     .error-card {
       display: none;
       border-top: 5px solid #EF4444;
@@ -181,9 +181,9 @@
 
   <div class="card error-card" id="error-card">
     <div style="font-size: 48px; margin-bottom: 16px;">🚫</div>
-    <h2 style="color: #EF4444; margin-bottom: 12px;">Hệ thống không tồn tại</h2>
-    <p>Địa chỉ liên kết bảo hành này chưa được đăng ký hoặc đã bị khóa thuộc nền tảng Qranty. Vui lòng kiểm tra lại đường dẫn.</p>
-    <button onclick="window.location.href='https://google.com'" style="background: #EF4444;">Thoát trang</button>
+    <h2 style="color: #EF4444; margin-bottom: 12px;" id="error-title">Hệ thống không tồn tại</h2>
+    <p id="error-message">Địa chỉ liên kết bảo hành này chưa được đăng ký hoặc đã bị khóa thuộc nền tảng Qranty. Vui lòng kiểm tra lại đường dẫn.</p>
+    <button onclick="window.location.reload()" style="background: #EF4444;">Thử lại</button>
   </div>
 
   <div class="footer">
@@ -191,6 +191,15 @@
   </div>
 
   <script>
+    // Hàm phụ trợ hiển thị giao diện báo lỗi động
+    function showErrorCard(title, message) {
+      document.getElementById('main-card').style.display = 'none';
+      document.getElementById('error-card').style.display = 'block';
+      document.getElementById('error-title').innerText = title;
+      document.getElementById('error-message').innerText = message;
+      document.title = `Lỗi: ${title}`;
+    }
+
     async function initStatelessBranding() {
       const hostname = window.location.hostname;
       document.getElementById('footer-domain').innerText = hostname;
@@ -209,24 +218,43 @@
       }
 
       try {
-        // BƯỚC 1: Tìm kiếm kiểm tra tên miền trong danh mục Registry
+        // ==========================================
+        // BƯỚC 1: KIỂM TRA TÊN MIỀN (REGISTRY CHECK)
+        // ==========================================
         const domainRegistryUrl = `${cdnBase}/domains/${hostname}.json`;
         const domainResponse = await fetch(domainRegistryUrl);
 
-        // HACKER HOẶC NGƯỜI DÙNG GÕ BỪA SUBDOMAIN -> Chặn tại đây
         if (!domainResponse.ok) {
-          throw new Error("TenantNotFound");
+          // CASE 1: Hoàn toàn không tồn tại file domain (Hacker / Gõ bừa subdomain)
+          showErrorCard(
+            "Hệ thống không tồn tại", 
+            "Địa chỉ liên kết bảo hành này chưa được đăng ký hoặc đã bị khóa thuộc nền tảng Qranty. Vui lòng kiểm tra lại đường dẫn."
+          );
+          return;
         }
 
         const domainData = await domainResponse.json();
-        const tenantHash = domainData.hash; // Bóc tách chuỗi mã băm bảo mật (ví dụ: hash_tenant_hoan_7791)
+        const tenantHash = domainData.hash; 
 
-        // BƯỚC 2: Cầm mã băm đi gọi cấu hình giao diện (Branding Config)
+        // ==========================================
+        // BƯỚC 2: LẤY CẤU HÌNH THƯƠNG HIỆU (BRANDING CONFIG)
+        // ==========================================
         const brandConfigUrl = `${cdnBase}/brands/${tenantHash}/config.json`;
         const brandResponse = await fetch(brandConfigUrl);
+
+        if (!brandResponse.ok) {
+          // CASE 2: Tên miền hợp lệ, nhưng Tenant chưa up file config.json lên thư mục tương ứng
+          showErrorCard(
+            "Chưa cấu hình giao diện", 
+            "Tên miền của bạn đã được đăng ký thành công trên Qranty. Vui lòng quay lại hệ thống quản trị để thiết lập màu sắc và logo (cập nhật file branding) để kích hoạt giao diện."
+          );
+          return;
+        }
+
+        // CASE 3: Mọi thứ hoàn hảo
         const config = await brandResponse.json();
 
-        // BƯỚC 3: "Đắp" cấu hình tìm được lên giao diện tĩnh
+        // "Đắp" cấu hình tìm được lên giao diện tĩnh
         document.documentElement.style.setProperty('--brand-color', config.color);
         document.documentElement.style.setProperty('--brand-light', config.light);
         
@@ -238,10 +266,10 @@
 
       } catch (error) {
         console.error("Luồng xử lý lỗi hệ thống:", error.message);
-        // Hiển thị màn hình khóa, ẩn màn hình chính
-        document.getElementById('main-card').style.display = 'none';
-        document.getElementById('error-card').style.display = 'block';
-        document.title = "Lỗi: Không tìm thấy hệ thống";
+        showErrorCard(
+          "Lỗi kết nối mạng", 
+          "Không thể tải cấu hình tài nguyên bảo hành lúc này. Vui lòng kiểm tra lại kết nối mạng của bạn."
+        );
       }
     }
 

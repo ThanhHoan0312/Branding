@@ -29,7 +29,7 @@ html{scroll-behavior:smooth;font-size:16px}
 body{background:var(--ink);color:var(--cream);font-family:'Cormorant Garamond',serif;cursor:none;overflow-x:hidden;}
 #cur{position:fixed;width:10px;height:10px;background:var(--gold-light);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .15s,height .15s;mix-blend-mode:screen;}
 #ring{position:fixed;width:38px;height:38px;border:1px solid rgba(184,146,42,0.5);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .2s,height .2s,opacity .2s;}
-a,button,.menu-item{cursor:none}
+a,button,.menu-card,.mtab{cursor:none}
 body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");opacity:0.025;pointer-events:none;z-index:9000;}
 nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:30px 72px;transition:background .4s,padding .4s;}
 nav.scrolled{background:rgba(12,11,9,0.94);backdrop-filter:blur(20px);padding:18px 72px;border-bottom:1px solid var(--border);}
@@ -89,7 +89,7 @@ nav.scrolled{background:rgba(12,11,9,0.94);backdrop-filter:blur(20px);padding:18
 .phil-attr{font-family:'DM Mono',monospace;font-size:0.62rem;letter-spacing:0.28em;color:var(--text-soft);text-transform:uppercase;margin-top:40px;position:relative;z-index:1;}
 
 /* ══════════════════════════════════════════
-   MENU — Redesigned with immersive hover
+   MENU — DẠNG HÌNH ẢNH (VISUAL CARDS)
 ══════════════════════════════════════════ */
 .menu {
   background: var(--ivory);
@@ -162,170 +162,112 @@ nav.scrolled{background:rgba(12,11,9,0.94);backdrop-filter:blur(20px);padding:18
 .mtab.active::after { transform: scaleX(1); }
 .mtab:hover { color: var(--gold); }
 
-/* Menu panel */
+/* Menu panel & Grid */
 .menu-panel {
   display: none;
-  padding: 0;
+  padding: 40px 72px;
 }
-.menu-panel.active { display: block; }
-
-/* Item list layout */
-.menu-list {
-  list-style: none;
-  position: relative;
+.menu-panel.active { 
+  display: block; 
 }
 
-/* ─── Each item row ─── */
-.menu-item {
+.menu-grid {
   display: grid;
-  grid-template-columns: 72px 1fr auto;
-  align-items: center;
-  gap: 0 40px;
-  padding: 28px 72px;
-  border-bottom: 1px solid rgba(0,0,0,0.07);
-  position: relative;
-  transition: all .45s cubic-bezier(.23,1,.32,1);
-  overflow: hidden;
-  background: transparent;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 40px;
+  list-style: none;
 }
-.menu-item::before {
-  /* ink flood from left on hover */
-  content: '';
+
+/* Card hình ảnh món */
+.menu-card {
+  position: relative;
+  aspect-ratio: 3/4; /* Tỷ lệ khung hình dọc */
+  overflow: hidden;
+  background: var(--ink);
+  cursor: none;
+}
+
+/* Hiệu ứng hình ảnh */
+.mc-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(60%) contrast(1.1) brightness(0.8);
+  transform: scale(1.02);
+  transition: transform 0.8s cubic-bezier(0.23,1,.32,1), filter 0.8s ease;
+}
+.menu-card:hover .mc-img {
+  transform: scale(1.1);
+  filter: grayscale(0%) contrast(1.1) brightness(1);
+}
+
+/* Lớp phủ Gradient mờ dần để dễ đọc chữ */
+.mc-overlay {
   position: absolute;
   inset: 0;
-  background: var(--ink);
-  transform: translateX(-101%);
-  transition: transform .55s cubic-bezier(.76,0,.24,1);
-  z-index: 0;
-}
-.menu-item:hover::before { transform: translateX(0); }
-.menu-item:hover { border-bottom-color: transparent; }
-
-/* z-index layering for children */
-.mi-index, .mi-body, .mi-price { position: relative; z-index: 1; }
-
-/* index number */
-.mi-index {
-  font-family: 'Cinzel', serif;
-  font-size: 0.75rem;
-  letter-spacing: 0.15em;
-  color: rgba(0,0,0,0.18);
-  transition: color .4s;
-  text-align: right;
-}
-.menu-item:hover .mi-index { color: rgba(184,146,42,0.35); }
-
-/* body: name + desc */
-.mi-body { flex: 1; }
-.mi-name {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.35rem;
-  font-weight: 400;
-  color: var(--text-main);
-  line-height: 1.2;
-  transition: color .35s;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.menu-item:hover .mi-name { color: var(--cream); }
-.mi-desc {
-  font-size: 0.95rem;
-  color: var(--text-muted);
-  line-height: 1.6;
-  margin-top: 4px;
-  max-width: 480px;
-  height: 0;
-  overflow: hidden;
-  opacity: 0;
-  transition: height .45s cubic-bezier(.23,1,.32,1), opacity .35s .1s;
-}
-.menu-item:hover .mi-desc {
-  height: 44px;
-  opacity: 1;
-}
-
-/* price */
-.mi-price {
-  font-family: 'Cinzel', serif;
-  font-size: 1rem;
-  letter-spacing: 0.12em;
-  color: var(--gold);
-  text-align: right;
-  white-space: nowrap;
-  transition: color .35s;
-}
-.menu-item:hover .mi-price { color: var(--gold-light); }
-
-/* NEW badge */
-.badge-new {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-family: 'DM Mono', monospace;
-  font-size: 0.5rem;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--ink);
-  background: var(--gold-light);
-  padding: 3px 8px;
-  line-height: 1;
-  flex-shrink: 0;
-}
-.menu-item:hover .badge-new {
-  background: var(--gold-pale);
-}
-
-/* Topping items — smaller */
-.menu-item.topping {
-  padding: 18px 72px;
-  grid-template-columns: 72px 1fr auto;
-}
-.menu-item.topping .mi-name { font-size: 1.05rem; }
-.menu-item.topping .mi-desc { height: 0 !important; }
-
-/* Category subheader inside list */
-.menu-cat-hd {
-  padding: 48px 72px 16px;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-.menu-cat-hd span {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.6rem;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  color: var(--gold);
-}
-.menu-cat-hd::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: linear-gradient(to right, rgba(184,146,42,0.2), transparent);
-}
-
-/* hover glow cursor follow */
-.menu-list {
-  --mx: 50%;
-  --my: 50%;
-}
-.menu-list::after {
-  content: '';
-  position: fixed;
-  width: 380px;
-  height: 380px;
-  background: radial-gradient(circle, rgba(184,146,42,0.06) 0%, transparent 70%);
-  pointer-events: none;
-  border-radius: 50%;
-  left: var(--mx);
-  top: var(--my);
-  transform: translate(-50%, -50%);
-  transition: left .12s ease, top .12s ease;
+  background: linear-gradient(to top, rgba(12,11,9, 0.95) 0%, rgba(12,11,9, 0.2) 50%, transparent 100%);
+  transition: opacity 0.5s ease;
   z-index: 1;
 }
+.menu-card:hover .mc-overlay {
+  opacity: 0.85;
+}
 
-.menu-more { text-align: center; padding: 64px 72px; }
+/* Nội dung chữ (Tên, Giá) */
+.mc-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 32px 24px;
+  z-index: 2;
+  transform: translateY(10px);
+  transition: transform 0.5s cubic-bezier(0.23,1,.32,1);
+}
+.menu-card:hover .mc-content {
+  transform: translateY(0);
+}
+
+.mc-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  font-weight: 400;
+  color: var(--cream);
+  line-height: 1.2;
+  margin-bottom: 12px;
+  text-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+.mc-price {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.85rem;
+  letter-spacing: 0.15em;
+  color: var(--gold-light);
+}
+
+/* Badge (Nếu là món Mới) */
+.mc-badge {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: var(--gold-light);
+  color: var(--ink);
+  font-family: 'DM Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.2em;
+  padding: 6px 10px;
+  text-transform: uppercase;
+  z-index: 3;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.5s ease;
+}
+.menu-card:hover .mc-badge {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.menu-more { text-align: center; padding: 24px 72px 80px; }
 
 /* ══════════════ END MENU ══════════════ */
 
@@ -506,269 +448,83 @@ footer{background:var(--ink);border-top:1px solid var(--border);padding:64px 80p
   <div class="menu-tabs rv">
     <button class="mtab active" data-tab="cafe">Cafe</button>
     <button class="mtab" data-tab="latte">Latte</button>
-    <button class="mtab" data-tab="traPha">Trà Pha Máy</button>
-    <button class="mtab" data-tab="traSua">Trà Sữa Pha Máy</button>
-    <button class="mtab" data-tab="yogurt">Yogurt</button>
-    <button class="mtab" data-tab="topping">Topping</button>
+    <button class="mtab" data-tab="tra">Trà Pha Máy</button>
   </div>
 
-  <!-- ── CAFE ── -->
+  <!-- ── CAFE PANEL ── -->
   <div class="menu-panel active" id="panel-cafe">
-    <ul class="menu-list" id="list-cafe">
-      <div class="menu-cat-hd"><span>Cà Phê Truyền Thống & Đặc Sắc</span></div>
-      <li class="menu-item rv">
-        <div class="mi-index">01</div>
-        <div class="mi-body">
-          <div class="mi-name">Cafe đen đá / nóng</div>
-          <div class="mi-desc">Espresso nguyên chất từ hạt Arabica Đà Lạt. Đậm đà, thuần túy, hậu vị lingering.</div>
+    <div class="menu-grid">
+      <!-- Món 1 -->
+      <div class="menu-card rv">
+        <!-- Thay link ảnh của bạn vào đây -->
+        <img src="https://images.unsplash.com/photo-1550461716-ba4eea509c0f?auto=format&fit=crop&q=80&w=800" alt="Cafe đen đá" class="mc-img">
+        <div class="mc-overlay"></div>
+        <div class="mc-content">
+          <div class="mc-name">Cafe Đen Đá</div>
+          <div class="mc-price">25.000₫</div>
         </div>
-        <div class="mi-price">25.000₫</div>
-      </li>
-      <li class="menu-item rv">
-        <div class="mi-index">02</div>
-        <div class="mi-body">
-          <div class="mi-name">Cafe sữa đá / nóng</div>
-          <div class="mi-desc">Cafe đen hòa quyện cùng sữa đặc Ông Thọ — vị ngọt quen thuộc, đậm đà khó quên.</div>
+      </div>
+
+      <!-- Món 2 -->
+      <div class="menu-card rv" style="transition-delay: 0.1s;">
+        <img src="https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&q=80&w=800" alt="Cafe sữa đá" class="mc-img">
+        <div class="mc-overlay"></div>
+        <div class="mc-content">
+          <div class="mc-name">Cafe Sữa Đá</div>
+          <div class="mc-price">28.000₫</div>
         </div>
-        <div class="mi-price">28.000₫</div>
-      </li>
-      <li class="menu-item rv">
-        <div class="mi-index">03</div>
-        <div class="mi-body">
-          <div class="mi-name">Bạc xỉu</div>
-          <div class="mi-desc">Sữa đặc nhiều, cafe nhẹ — thức uống của buổi sáng bình yên.</div>
+      </div>
+
+      <!-- Món 3 (Có badge Món mới) -->
+      <div class="menu-card rv" style="transition-delay: 0.2s;">
+        <div class="mc-badge">✦ Mới</div>
+        <img src="https://images.unsplash.com/photo-1572442388796-11668a67e53d?auto=format&fit=crop&q=80&w=800" alt="Caramel Kem Mây" class="mc-img">
+        <div class="mc-overlay"></div>
+        <div class="mc-content">
+          <div class="mc-name">Caramel Kem Mây</div>
+          <div class="mc-price">42.000₫</div>
         </div>
-        <div class="mi-price">32.000₫</div>
-      </li>
-      <li class="menu-item rv">
-        <div class="mi-index">04</div>
-        <div class="mi-body">
-          <div class="mi-name">Cafe muối</div>
-          <div class="mi-desc">Đối lập tinh tế giữa đắng, ngọt và mặn — một trải nghiệm vị giác bất ngờ.</div>
-        </div>
-        <div class="mi-price">35.000₫</div>
-      </li>
-      <li class="menu-item rv">
-        <div class="mi-index">05</div>
-        <div class="mi-body">
-          <div class="mi-name">Caramel kem mây <span class="badge-new">✦ Mới</span></div>
-          <div class="mi-desc">Espresso double shot, caramel tự nấu, topped cream cheese mousse — sang trọng và đầy đặn.</div>
-        </div>
-        <div class="mi-price">42.000₫</div>
-      </li>
-      <li class="menu-item rv">
-        <div class="mi-index">06</div>
-        <div class="mi-body">
-          <div class="mi-name">Cafe hạnh nhân <span class="badge-new">✦ Mới</span></div>
-          <div class="mi-desc">Sữa hạnh nhân rang thơm, espresso, thoảng hương vanilla — nhẹ nhàng mà đủ chiều sâu.</div>
-        </div>
-        <div class="mi-price">45.000₫</div>
-      </li>
-    </ul>
+      </div>
+    </div>
   </div>
 
-  <!-- ── LATTE ── -->
+  <!-- ── LATTE PANEL ── -->
   <div class="menu-panel" id="panel-latte">
-    <ul class="menu-list" id="list-latte">
-      <div class="menu-cat-hd"><span>Latte Thủ Công</span></div>
-      <li class="menu-item rv">
-        <div class="mi-index">01</div>
-        <div class="mi-body">
-          <div class="mi-name">Matcha Latte Kyoto</div>
-          <div class="mi-desc">Matcha Nhật Bản grade A pha cùng sữa yến mạch steamed — xanh đậm, hậu vị umami dịu ngọt.</div>
+    <div class="menu-grid">
+      <div class="menu-card rv">
+        <img src="https://images.unsplash.com/photo-1515823662972-da6a2e4d3002?auto=format&fit=crop&q=80&w=800" alt="Matcha Latte" class="mc-img">
+        <div class="mc-overlay"></div>
+        <div class="mc-content">
+          <div class="mc-name">Matcha Latte Kyoto</div>
+          <div class="mc-price">49.000₫</div>
         </div>
-        <div class="mi-price">49.000₫</div>
-      </li>
-      <li class="menu-item rv">
-        <div class="mi-index">02</div>
-        <div class="mi-body">
-          <div class="mi-name">Matcha Latte Classic</div>
-          <div class="mi-desc">Matcha Nhật Bản pha sữa tươi nguyên kem — thanh mát, cân bằng, dễ uống mọi ngày.</div>
-        </div>
-        <div class="mi-price">35.000₫</div>
-      </li>
-      <li class="menu-item rv">
-        <div class="mi-index">03</div>
-        <div class="mi-body">
-          <div class="mi-name">Latte Cacao</div>
-          <div class="mi-desc">Espresso, bột cacao Bến Tre, sữa steamed — ấm áp như một buổi chiều mưa.</div>
-        </div>
-        <div class="mi-price">35.000₫</div>
-      </li>
-    </ul>
+      </div>
+      <!-- Thêm các món latte khác ở đây -->
+    </div>
   </div>
 
-  <!-- ── TRÀ PHA MÁY ── -->
-  <div class="menu-panel" id="panel-traPha">
-    <ul class="menu-list" id="list-traPha">
-      <div class="menu-cat-hd"><span>Fresh Brew Fruit Tea</span></div>
-      <li class="menu-item rv">
-        <div class="mi-index">01</div>
-        <div class="mi-body">
-          <div class="mi-name">Trà Đào Nhiệt Đới</div>
-          <div class="mi-desc">Trà xanh pha máy, đào tươi thái lát, nước cốt tropical — ngọt mát, đầy màu sắc.</div>
+  <!-- ── TRÀ PANEL ── -->
+  <div class="menu-panel" id="panel-tra">
+    <div class="menu-grid">
+      <div class="menu-card rv">
+        <img src="https://images.unsplash.com/photo-1499638472904-ea5c6178a59c?auto=format&fit=crop&q=80&w=800" alt="Trà Đào" class="mc-img">
+        <div class="mc-overlay"></div>
+        <div class="mc-content">
+          <div class="mc-name">Trà Đào Nhiệt Đới</div>
+          <div class="mc-price">42.000₫</div>
         </div>
-        <div class="mi-price">42.000₫</div>
-      </li>
-      <li class="menu-item rv">
-        <div class="mi-index">02</div>
-        <div class="mi-body">
-          <div class="mi-name">Trà Vải Lá Nếp</div>
-          <div class="mi-desc">Vải tươi ngọt lịm, lá nếp thơm nhẹ, trà oolong fresh brew — tinh tế và mang phong vị Á Đông.</div>
-        </div>
-        <div class="mi-price">42.000₫</div>
-      </li>
-      <li class="menu-item rv">
-        <div class="mi-index">03</div>
-        <div class="mi-body">
-          <div class="mi-name">Trà Ổi Vải Dịu Ngọt</div>
-          <div class="mi-desc">Ổi xanh chua nhẹ kết hợp vải chín ngọt — một cặp đôi bất ngờ mà hoàn hảo.</div>
-        </div>
-        <div class="mi-price">42.000₫</div>
-      </li>
-      <li class="menu-item rv">
-        <div class="mi-index">04</div>
-        <div class="mi-body">
-          <div class="mi-name">Trà Kiwi Thanh Mát</div>
-          <div class="mi-desc">Kiwi New Zealand chua thanh, trà xanh nhẹ nhàng — refreshing cho buổi chiều hè.</div>
-        </div>
-        <div class="mi-price">45.000₫</div>
-      </li>
-      <li class="menu-item rv">
-        <div class="mi-index">05</div>
-        <div class="mi-body">
-          <div class="mi-name">Trà Lá Nếp Kem Mây</div>
-          <div class="mi-desc">Trà lá nếp fresh brew, topped cream cheese mousse mềm tan — thanh mát mà béo ngậy.</div>
-        </div>
-        <div class="mi-price">39.000₫</div>
-      </li>
-    </ul>
-  </div>
-
-  <!-- ── TRÀ SỮA PHA MÁY ── -->
-  <div class="menu-panel" id="panel-traSua">
-    <ul class="menu-list" id="list-traSua">
-      <div class="menu-cat-hd"><span>Fresh Brew Milk Tea</span></div>
-      <li class="menu-item rv">
-        <div class="mi-index">01</div>
-        <div class="mi-body">
-          <div class="mi-name">Đậm Vị</div>
-          <div class="mi-desc">Trà đen pha đậm, sữa tươi tỷ lệ cao — đầy đặn, rich, dành cho ai thích cảm giác mạnh.</div>
-        </div>
-        <div class="mi-price">45.000₫</div>
-      </li>
-      <li class="menu-item rv">
-        <div class="mi-index">02</div>
-        <div class="mi-body">
-          <div class="mi-name">Olong Bạch Ngọc</div>
-          <div class="mi-desc">Oolong trắng nhẹ nhàng, sữa tươi, hậu vị hoa quả — thanh thoát như sương mai.</div>
-        </div>
-        <div class="mi-price">42.000₫</div>
-      </li>
-      <li class="menu-item rv">
-        <div class="mi-index">03</div>
-        <div class="mi-body">
-          <div class="mi-name">Olong Lục Vân</div>
-          <div class="mi-desc">Oolong xanh đặc biệt, sữa đặc hài hòa — vị cỏ cây và sữa béo quyện lẫn tuyệt vời.</div>
-        </div>
-        <div class="mi-price">42.000₫</div>
-      </li>
-      <li class="menu-item rv">
-        <div class="mi-index">04</div>
-        <div class="mi-body">
-          <div class="mi-name">Olong Khói</div>
-          <div class="mi-desc">Lapsang souchong oolong, khói gỗ thoang thoảng, sữa kem — huyền bí và không thể quên.</div>
-        </div>
-        <div class="mi-price">42.000₫</div>
-      </li>
-      <li class="menu-item rv">
-        <div class="mi-index">05</div>
-        <div class="mi-body">
-          <div class="mi-name">Hồng Trầm</div>
-          <div class="mi-desc">Trà hồng trầm hương, sữa tươi, một gợi ý hoa nhẹ nhàng — nữ tính và sang trọng.</div>
-        </div>
-        <div class="mi-price">39.000₫</div>
-      </li>
-      <li class="menu-item rv">
-        <div class="mi-index">06</div>
-        <div class="mi-body">
-          <div class="mi-name">Nhài Thơm</div>
-          <div class="mi-desc">Trà nhài ướp tươi, sữa kem — thơm tinh tế, dịu dàng, một ly cho buổi tối thư giãn.</div>
-        </div>
-        <div class="mi-price">39.000₫</div>
-      </li>
-    </ul>
-  </div>
-
-  <!-- ── YOGURT ── -->
-  <div class="menu-panel" id="panel-yogurt">
-    <ul class="menu-list" id="list-yogurt">
-      <div class="menu-cat-hd"><span>Yogurt Đánh Tươi</span></div>
-      <li class="menu-item rv">
-        <div class="mi-index">01</div>
-        <div class="mi-body">
-          <div class="mi-name">Yogurt Đào</div>
-          <div class="mi-desc">Yogurt đánh mịn, đào tươi thái lát, nước cốt đào — mát lạnh, chua ngọt hài hòa.</div>
-        </div>
-        <div class="mi-price">35.000₫</div>
-      </li>
-      <li class="menu-item rv">
-        <div class="mi-index">02</div>
-        <div class="mi-body">
-          <div class="mi-name">Yogurt Việt Quất</div>
-          <div class="mi-desc">Yogurt tươi cùng blueberry Mỹ — antioxidant cao, màu tím đẹp, vị chua thanh.</div>
-        </div>
-        <div class="mi-price">35.000₫</div>
-      </li>
-      <li class="menu-item rv">
-        <div class="mi-index">03</div>
-        <div class="mi-body">
-          <div class="mi-name">Yogurt Chanh Dây</div>
-          <div class="mi-desc">Chanh dây tươi nguyên trái, yogurt kem — chua mạnh, thơm nồng, cực kỳ refreshing.</div>
-        </div>
-        <div class="mi-price">35.000₫</div>
-      </li>
-    </ul>
-  </div>
-
-  <!-- ── TOPPING ── -->
-  <div class="menu-panel" id="panel-topping">
-    <ul class="menu-list" id="list-topping">
-      <div class="menu-cat-hd"><span>Thêm Vào Ly Của Bạn</span></div>
-      <li class="menu-item topping rv">
-        <div class="mi-index">+</div>
-        <div class="mi-body">
-          <div class="mi-name">Trân châu trắng / Olong</div>
-          <div class="mi-desc">Dai mềm, nấu tươi mỗi ngày.</div>
-        </div>
-        <div class="mi-price">+5.000₫</div>
-      </li>
-      <li class="menu-item topping rv">
-        <div class="mi-index">+</div>
-        <div class="mi-body">
-          <div class="mi-name">Thạch trà / Cafe</div>
-          <div class="mi-desc">Thạch trong suốt, vị trà hoặc cafe nhẹ.</div>
-        </div>
-        <div class="mi-price">+5.000₫</div>
-      </li>
-      <li class="menu-item topping rv">
-        <div class="mi-index">+</div>
-        <div class="mi-body">
-          <div class="mi-name">Đào / Vải miếng</div>
-          <div class="mi-desc">Trái cây tươi thái lát, thêm vào bất kỳ thức uống nào.</div>
-        </div>
-        <div class="mi-price">+5.000₫</div>
-      </li>
-    </ul>
+      </div>
+    </div>
   </div>
 
   <div class="menu-more rv">
     <a href="#" class="btn-gold" style="display:inline-flex;align-items:center;gap:12px">
-      Xem Thực Đơn Đầy Đủ
+      Xem Toàn Bộ Menu
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
     </a>
   </div>
 </section>
+<!-- ══════════════ END MENU ══════════════ -->
 
 <!-- EXPERIENCE -->
 <section class="exp" id="exp">
@@ -847,7 +603,7 @@ const cur=document.getElementById('cur'),ring=document.getElementById('ring');
 let mx=0,my=0,rx=0,ry=0;
 document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
 (function animR(){rx+=(mx-rx)*.1;ry+=(my-ry)*.1;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(animR);})();
-document.querySelectorAll('a,button,.menu-item').forEach(el=>{
+document.querySelectorAll('a,button,.menu-card,.mtab').forEach(el=>{
   el.addEventListener('mouseenter',()=>{cur.style.width='18px';cur.style.height='18px';ring.style.width='54px';ring.style.height='54px';ring.style.opacity='1';});
   el.addEventListener('mouseleave',()=>{cur.style.width='10px';cur.style.height='10px';ring.style.width='38px';ring.style.height='38px';ring.style.opacity='.8';});
 });
@@ -881,26 +637,6 @@ document.querySelectorAll('.mtab').forEach(tab=>{
   });
 });
 
-// ── Gold glow follows cursor inside menu list ──
-document.querySelectorAll('.menu-list').forEach(list=>{
-  list.addEventListener('mousemove',e=>{
-    const rect=list.getBoundingClientRect();
-    list.style.setProperty('--mx',(e.clientX)+'px');
-    list.style.setProperty('--my',(e.clientY)+'px');
-  });
-});
-
-// ── Menu item: stagger desc height on hover ──
-document.querySelectorAll('.menu-item:not(.topping)').forEach(item=>{
-  const desc=item.querySelector('.mi-desc');
-  if(!desc)return;
-  // pre-measure natural height
-  desc.style.height='auto';
-  const h=desc.scrollHeight+'px';
-  desc.style.height='0';
-  item.addEventListener('mouseenter',()=>{desc.style.height=h;});
-  item.addEventListener('mouseleave',()=>{desc.style.height='0';});
-});
 </script>
 </body>
 </html>
